@@ -1,7 +1,7 @@
 package codacy.plugin
 
 import codacy.healthChecks.DatabaseHealthCheck
-import com.codahale.metrics.MetricRegistry
+import com.codahale.metrics.{Meter, MetricRegistry}
 import com.codahale.metrics.health.HealthCheckRegistry
 import play.api.db.{DBApi, DBPlugin}
 import play.api.{Application, Plugin}
@@ -20,11 +20,12 @@ class DefaultMetricPlugin(app: Application) extends MetricPlugin{ self =>
 
   override def onStart():Unit = {
     app.plugin[DBPlugin].map(_.api).map(initDbHealthChecks)
+    println(s"metrics plugin started")
   }
 
   override lazy val api: MetricApi = new MetricApi{
-    override def metricRegistry: MetricRegistry           = new MetricRegistry
-    override def healthCheckRegistry: HealthCheckRegistry = new HealthCheckRegistry
+    override lazy val metricRegistry: MetricRegistry           = new MetricRegistry
+    override lazy val healthCheckRegistry: HealthCheckRegistry = new HealthCheckRegistry
   }
 
   private[this] def initDbHealthChecks(dBApi: DBApi) = {
