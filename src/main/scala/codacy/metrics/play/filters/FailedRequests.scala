@@ -13,7 +13,7 @@ case class FailedRequests(failedRequests: MeterName, excludeRequest: RequestHead
     if (! excludeRequest(requestHeader)){
       result.onSuccess{
         case result if ! result.isSuccess =>
-          failedRequests.mark
+          mark(failedRequests)
         case _ =>
           ()
       }

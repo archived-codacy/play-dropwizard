@@ -4,7 +4,7 @@ import codacy.metrics.dropwizard._
 import play.api.mvc.{Result, RequestHeader, Filter}
 import scala.concurrent.Future
 
-case class SuccessfulRequests(successfulRequestsMeter:MeterName, excludeRequest: RequestHeader => Boolean) extends Filter{
+case class SuccessfulRequests(successfulRequestsMeter: MeterName, excludeRequest: RequestHeader => Boolean) extends Filter{
 
   override def apply(nextFilter: (RequestHeader) => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
     val result = nextFilter(requestHeader)
@@ -12,7 +12,7 @@ case class SuccessfulRequests(successfulRequestsMeter:MeterName, excludeRequest:
     if(! excludeRequest(requestHeader)){
       result.onSuccess{
         case result if result.is2xx =>
-          successfulRequestsMeter.mark
+          mark(successfulRequestsMeter)
         case _ =>
           ()
       }

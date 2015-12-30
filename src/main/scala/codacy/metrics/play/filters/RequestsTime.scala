@@ -11,7 +11,7 @@ case class RequestsTime(excludeRequest: RequestHeader => Boolean) extends Filter
     lazy val result = nextFilter(requestHeader)
 
     if(! excludeRequest(requestHeader)){
-      val context = MetricRegistry.timer(nameForRequest(requestHeader)).time()
+      val context = timer(nameForRequest(requestHeader)).time()
       result.onComplete( _ => context.stop() )
     }
 
@@ -19,6 +19,6 @@ case class RequestsTime(excludeRequest: RequestHeader => Boolean) extends Filter
   }
 
   private[this] def nameForRequest(requestHeader: RequestHeader):TimerName = {
-    TimerName(requestHeader.path)
+    TimerName(s"path=${requestHeader.path}")
   }
 }

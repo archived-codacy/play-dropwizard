@@ -14,8 +14,8 @@ class MetricPlugin(app: Application) extends Plugin{ self =>
   private[this] def initDbHealthChecks(dBApi: DBApi) = {
     dBApi.datasources.foreach{ case (database,name) =>
       val healthCheck = DatabaseHealthCheck(database)
-
-      HealthCheckRegistry.register(s"$databasePrefix:${name}",healthCheck)
+      val checkName = HealthCheckName(s"$databasePrefix:${name}")
+      register(checkName,healthCheck)
     }
   }
 }

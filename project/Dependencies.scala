@@ -10,5 +10,7 @@ object Dependencies{
   val metricsServlets = "io.dropwizard.metrics" %  "metrics-servlets" % dropWizardVersion
   val play            = "com.typesafe.play"     %% "play"             % playVersion
   val playJdbc        = "com.typesafe.play"     %% "play-jdbc"        % playVersion
+  val playWs          = "com.typesafe.play"     %% "play-ws"          % playVersion
+
 }
 

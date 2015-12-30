@@ -1,19 +1,14 @@
 package codacy.json
 
-import java.util
 import java.util.concurrent.TimeUnit
-import com.codahale.metrics.health.HealthCheck
 import com.codahale.metrics.{MetricRegistry => DropwizardRegistry, MetricFilter}
 import com.codahale.metrics.json.{MetricsModule, HealthCheckModule}
 import com.fasterxml.jackson.databind.{ObjectWriter, ObjectMapper}
 import play.api.libs.json._
 import codacy.metrics.dropwizard._
-
 import scala.util.{Success, Try}
 
 trait DropwizardJson {
-
-  type HealthCheckResult = util.SortedMap[String, HealthCheck.Result]
 
   implicit val metricRegistryWriter: OWrites[MetricRegistry] = OWrites{ (obj:MetricRegistry) =>
     val underlying:DropwizardRegistry = obj
@@ -21,9 +16,13 @@ trait DropwizardJson {
     parseAsJsObject(bytes)
   }
 
-  implicit val healthCheckWriter = OWrites[HealthCheckResult]{ (obj:HealthCheckResult) =>
-    val bytes = healthOW.writeValueAsBytes(obj)
-    parseAsJsObject(bytes)
+  implicit val healthCheckWriter = OWrites[HealthCheckResults]{ (obj:HealthCheckResults) =>
+    obj match{
+      case map:JavaMap =>
+        val bytes = healthOW.writeValueAsBytes(map.javaRepr)
+        parseAsJsObject(bytes)
+      case _ => Json.obj()
+    }
   }
 
   private[this] val healthOM: ObjectMapper = new ObjectMapper().registerModule(new HealthCheckModule())

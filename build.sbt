@@ -8,11 +8,13 @@ scalaVersion := "2.11.7"
 
 organization := "com.codacy"
 
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+
 libraryDependencies ++= Seq(
   metricsCore,
   metricsJson,
   metricsServlets,
   play,
-  playJdbc
+  playJdbc,
+  playWs
 )
-
