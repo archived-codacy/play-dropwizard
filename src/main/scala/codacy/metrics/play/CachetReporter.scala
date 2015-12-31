@@ -20,7 +20,7 @@ private[play] case class CachetReporter(registry: MetricRegistry=MetricRegistry,
   override def report(gauges: util.SortedMap[String, Gauge[_]], counters: util.SortedMap[String, Counter],
                       histograms: util.SortedMap[String, Histogram], meters: util.SortedMap[String, Meter],
                       timers: util.SortedMap[String, Timer]): Unit = {
-    val date = Some((DateTime.now().getMillis / 1000).toString)
+    val date = DateTime.now()//.getMillis / 1000)
 
     Cachet.metrics.list().map{ case metrics =>
       val tt = counters.toList
@@ -30,7 +30,7 @@ private[play] case class CachetReporter(registry: MetricRegistry=MetricRegistry,
 
       val counterPoints = Future.sequence(counters.map{ case (n,counter) =>
         val name = MetricName(n)
-        lazy val point = CreatePoint(PointValue(counter.getCount),date)
+        lazy val point = CreatePoint(PointValue(counter.getCount),Some(date))
 
         mapping.get(name).map( Future.successful ).getOrElse(create(name,counter)).flatMap{ case metricId =>
           Cachet.metrics.points(metricId).create(point)
@@ -39,7 +39,7 @@ private[play] case class CachetReporter(registry: MetricRegistry=MetricRegistry,
 
       val timerPs = ttr.map{ case (n,timer) =>
         val name = MetricName(n)
-        lazy val point = CreatePoint(PointValue(math.round(timer.getOneMinuteRate)),date)
+        lazy val point = CreatePoint(PointValue(math.round(timer.getOneMinuteRate)),Some(date))
 
         mapping.get(name).map( Future.successful ).getOrElse(create(name,timer)).flatMap{ case metricId =>
           Cachet.metrics.points(metricId).create(point)

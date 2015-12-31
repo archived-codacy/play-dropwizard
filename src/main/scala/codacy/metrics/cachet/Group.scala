@@ -1,10 +1,12 @@
 package codacy.metrics.cachet
 
+import codacy.macros.enriched
+
 sealed trait Group
 
-case class GroupId(value:Int)       extends Identifier[Group]{ override def toString = value.toString }
-case class GroupName(value:String)  extends AnyVal
-case class GroupOrder(value:Int) extends AnyVal
+@enriched case class GroupId(value:Int)      extends Identifier[Group]
+@enriched case class GroupName(value:String) extends AnyVal
+@enriched case class GroupOrder(value:Int)   extends AnyVal
 
 case class CreateGroup(name:GroupName,order:Option[GroupOrder]=None) extends Group
 case class UpdateGroup(id: GroupId, name:Option[GroupName],order:Option[GroupOrder]) extends Group

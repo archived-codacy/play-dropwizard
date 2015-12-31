@@ -9,7 +9,7 @@ object Cachet{ calls =>
     override def update = Put(a => s"$path/${a.id}", jsonDataBody[ResponseComponent])
     override def remove = Delete(id => s"$path/$id", is204 )
     override def byId   = Get(id => s"$path/$id", jsonDataBody[Option[ResponseComponent]])
-    override def list = Get(_ => path, jsonDataBody[Set[ResponseComponent]])
+    override def list   = Get(_ => path, jsonDataBody[Set[ResponseComponent]])
 
     object groups extends Crlud[GroupCrud]{
       private[this] val path = s"${cmp.path}/groups"

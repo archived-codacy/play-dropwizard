@@ -1,9 +1,11 @@
 package codacy.metrics.cachet
 
+import codacy.macros.enriched
+
 sealed trait Point
 
-case class PointId(value:Long)    extends Identifier[Point]{ override def toString = value.toString }
-case class PointValue(value:Long) extends AnyVal
+@enriched case class PointId(value:Long)    extends Identifier[Point]
+@enriched case class PointValue(value:Long) extends AnyVal
 
 case class CreatePoint(value:PointValue,timestamp:Option[Date]) extends Point
 case class ResponsePoint(id:PointId, metricId:MetricId, value:PointValue,createdAt:Date,

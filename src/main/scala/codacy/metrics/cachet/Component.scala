@@ -1,12 +1,14 @@
 package codacy.metrics.cachet
 
+import codacy.macros._
+
 sealed trait Component
 
-case class ComponentId(value:Long) extends Identifier[Component]{ override def toString = value.toString }
-case class ComponentName(value:String){ assert(value.nonEmpty) }
-case class ComponentDescription(value:String) extends AnyVal
-case class ComponentLink(value:String)        extends AnyVal
-case class ComponentOrder(value:Int)          extends AnyVal
+@enriched case class ComponentId(value:Long)            extends Identifier[Component]
+@enriched case class ComponentName(value:String)        extends AnyVal
+@enriched case class ComponentDescription(value:String) extends AnyVal
+@enriched case class ComponentLink(value:String)        extends AnyVal
+@enriched case class ComponentOrder(value:Int)          extends AnyVal
 
 object ComponentStatus extends Enumeration(1){
   type ComponentStatus = Value

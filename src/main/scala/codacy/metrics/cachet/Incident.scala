@@ -1,13 +1,15 @@
 package codacy.metrics.cachet
 
+import codacy.macros.enriched
 import codacy.metrics.cachet.ComponentStatus.ComponentStatus
 
 sealed trait Incident
 
-case class IncidentId(value:Long)        extends Identifier[Incident]{ override def toString = value.toString }
-case class IncidentName(value:String)    extends AnyVal
-case class IncidentMessage(value:String) extends AnyVal
-case class IncidentVisibility(value:Int) extends AnyVal
+@enriched case class IncidentId(value:Long)        extends Identifier[Incident]
+@enriched case class IncidentName(value:String)    extends AnyVal
+@enriched case class IncidentMessage(value:String) extends AnyVal
+@enriched case class IncidentVisibility(value:Int) extends AnyVal
+
 object IncidentStatus extends Enumeration{
   type IncidentStatus = Value
   val Scheduled, Investigating, Identified, Watching, Fixed = Value
