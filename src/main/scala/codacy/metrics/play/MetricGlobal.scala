@@ -51,9 +51,13 @@ class MetricGlobal(cfg: Application => (CreateComponent, Option[CreateGroup]), f
           Cachet.components.groups.create(group).map(_.id)
         }
       }.map( Option(_) )
-    }.getOrElse( Future.successful(Option.empty) )
+    }.getOrElse(
+      //GroupId 0 means no group... :(
+      Future.successful(Option.empty)
+    )
 
     groupId.flatMap{ case groupId =>
+
       //create update set status
       Cachet.components.list().flatMap{ case components =>
         components.collectFirst{ case cmp if cmp.groupId == groupId && cmp.name == component.name =>

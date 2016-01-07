@@ -1,5 +1,7 @@
 package codacy.metrics.cachet
 
+import scala.util.Failure
+
 object Cachet{ calls =>
 
   object components extends Crlud[ComponentCrud]{ cmp =>
@@ -8,7 +10,7 @@ object Cachet{ calls =>
     override def create = Post(_ => path, jsonDataBody[ResponseComponent])
     override def update = Put(a => s"$path/${a.id}", jsonDataBody[ResponseComponent])
     override def remove = Delete(id => s"$path/$id", is204 )
-    override def byId   = Get(id => s"$path/$id", jsonDataBody[Option[ResponseComponent]])
+    override def byId   = Get(id => s"$path/$id", optJsonDataBody[ResponseComponent])
     override def list   = Get(_ => path, jsonDataBody[Set[ResponseComponent]])
 
     object groups extends Crlud[GroupCrud]{
@@ -17,7 +19,7 @@ object Cachet{ calls =>
       override def create = Post( _ => path,jsonDataBody[ResponseGroup])
       override def remove = Delete(id => s"$path/$id", is204)
       override def update = Put(a => s"$path/${a.id}",jsonDataBody[ResponseGroup])
-      override def byId   = Get(id => s"$path/$id",jsonDataBody[Option[ResponseGroup]])
+      override def byId   = Get(id => s"$path/$id",optJsonDataBody[ResponseGroup])
       override def list   = Get(_ => path,jsonDataBody[Set[ResponseGroup]])
     }
   }
@@ -27,7 +29,7 @@ object Cachet{ calls =>
 
     override def create = Post(a => path,jsonDataBody[ResponseMetric])
     override def remove = Delete(id => s"$path/$id",is204)
-    override def byId   = Get(id => s"$path/$id",jsonDataBody[Option[ResponseMetric]])
+    override def byId   = Get(id => s"$path/$id",optJsonDataBody[ResponseMetric])
     override def list   = Get(_ => path,jsonDataBody[Set[ResponseMetric]])
 
     case class points(metricId: MetricId) extends Cld[PointCrud] {
@@ -46,6 +48,6 @@ object Cachet{ calls =>
     override def create = Post(_ => path,jsonDataBody[ResponseIncident])
     override def update = Put(a => s"$path/${a.id}",jsonDataBody[ResponseIncident])
     override def remove = Delete(id => s"$path/$id", is204)
-    override def byId   = Get(id => s"$path/$id",jsonDataBody[Option[ResponseIncident]])
+    override def byId   = Get(id => s"$path/$id",optJsonDataBody[ResponseIncident])
   }
 }

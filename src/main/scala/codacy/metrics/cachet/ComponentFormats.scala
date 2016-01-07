@@ -18,7 +18,9 @@ private[cachet] trait ComponentFormats{
       case ComponentFields(
         Some(id), Some(name),description, Some(status), link,
         Some(order), groupId, _, Some(createdAt), updatedAt, deletedAt
-      ) => ResponseComponent(id,name,description,status,link,order,groupId,createdAt,updatedAt,deletedAt)
+      ) =>
+        val grId = groupId.filter(_.value > 0)
+        ResponseComponent(id,name,description,status,link,order,grId,createdAt,updatedAt,deletedAt)
     }
   }
 
@@ -35,12 +37,12 @@ private[cachet] trait ComponentFormats{
   private[this] implicit class CreateComponentExtension(value:CreateComponent){
     import value._
     def fields: ComponentFields = ComponentFields(name = Option(name),description = description, status = Option(status),
-      link = link, order = order, group_id = groupId, enabled = enabled)
+      link = link, order = order, group_id = groupId.filter(_.value > 0), enabled = enabled)
   }
 
   private[this] implicit class UpdateComponentExtension(value:UpdateComponent){
     import value._
     def fields = ComponentFields(id = Option(id), name = name, status = status,link = link,
-      order = order, group_id = groupId)
+      order = order, group_id = groupId.filter(_.value > 0))
   }
 }

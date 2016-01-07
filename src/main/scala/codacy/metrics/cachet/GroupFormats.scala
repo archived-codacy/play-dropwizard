@@ -15,6 +15,6 @@ private[cachet] trait GroupFormats{
     (__ \ "name"      ).read[GroupName] and
     (__ \ "order"     ).read[GroupOrder] and
     (__ \ "created_at").read[Date] and
-    (__ \ "updated_at").read[Option[Date]]
+    (__ \ "updated_at").readNullable[Date]
   )( ResponseGroup.apply _)
 }

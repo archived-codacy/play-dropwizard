@@ -21,7 +21,14 @@ trait DropwizardJson {
       case map:JavaMap =>
         val bytes = healthOW.writeValueAsBytes(map.javaRepr)
         parseAsJsObject(bytes)
-      case _ => Json.obj()
+      case fields =>
+        val fs = fields.toSeq.map{ case (name,result) =>
+          val isHealthy = result.isHealthy
+          name.value -> (Json.obj(
+            "healthy" -> isHealthy
+          ) ++ (if(!isHealthy) Json.obj("message" -> result.getMessage) else Json.obj()))
+        }
+      JsObject(fs)
     }
   }
 

@@ -12,6 +12,6 @@ private[cachet] trait PointFormats{
     (__ \ "metric_id" ).read[MetricId] and
     (__ \ "value"     ).read[PointValue] and
     (__ \ "created_at").read[Date] and
-    (__ \ "updated_at").read[Option[Date]]
+    (__ \ "updated_at").readNullable[Date]
   )(ResponsePoint.apply _)
 }

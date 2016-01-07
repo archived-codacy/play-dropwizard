@@ -1,17 +1,17 @@
 package codacy.healthChecks
 
-import javax.sql.DataSource
 import com.codahale.metrics.health.HealthCheck
+import play.api.db.Database
 
-import scala.util.{Success, Try}
+import scala.util.{Failure, Success, Try}
 
-case class DatabaseHealthCheck(database:DataSource) extends HealthCheck{
+case class DatabaseHealthCheck(database:Database) extends HealthCheck{
   override def check() = {
-    Try( database.getConnection().isValid(5/*seconds*/) ) match{
-      case Success(true) =>
+    Try( database.getConnection().close/*(5seconds)*/ ) match{
+      case Success(_) =>
         HealthCheck.Result.healthy()
-      case _ =>
-        HealthCheck.Result.unhealthy("did not respond")
+      case Failure(ex) =>
+        HealthCheck.Result.unhealthy(ex.getMessage)
     }
   }
 }

@@ -1,7 +1,7 @@
 package codacy.metrics.cachet
 
 import play.api.Application
-import play.api.libs.ws.{WSRequestHolder, WS, WSResponse}
+import play.api.libs.ws.{WSRequest, WS, WSResponse}
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json._
 
@@ -9,28 +9,35 @@ sealed trait Request[Param,Result]{ self =>
 
   def url: Param => String
   def mapper:WSResponse => Future[Result]
-  private[cachet] def f(p:Param): WSRequestHolder => Future[WSResponse]
+  private[cachet] def f(p:Param): WSRequest => Future[WSResponse]
 }
 
 final case class Post[A,B](url: A => String, mapper:WSResponse => Future[B])(implicit w:Writes[A]) extends Request[A,B]{
-  private[cachet] def f(payload:A) = (_:WSRequestHolder).post( Json.toJson(payload) )
+  private[cachet] def f(payload:A) = (_:WSRequest).post( Json.toJson(payload) )
 }
 
 final case class Put[A,B] (url:A => String, mapper:WSResponse => Future[B])(implicit w:Writes[A]) extends Request[A,B]{
-  private[cachet] def f(payload:A) = (_:WSRequestHolder).put( Json.toJson(payload) )
+  private[cachet] def f(payload:A) = (_:WSRequest).put( Json.toJson(payload) )
 }
 
 final case class Get[A,B](url: A => String, mapper:WSResponse => Future[B]) extends Request[A,B]{
-  private[cachet] def f(a:A) = (_:WSRequestHolder).get()
+  private[cachet] def f(a:A) = (_:WSRequest).get()
 }
 
 final case class Delete[A,B](url: A => String, mapper:WSResponse => Future[B]) extends Request[A,B]{
-  private[cachet] def f(a:A) = (_:WSRequestHolder).delete()
+  private[cachet] def f(a:A) = (_:WSRequest).delete()
 }
 
 case class ParseException(jsResult:JsError) extends Throwable
 
 private[cachet] trait WsApi{
+
+  def optJsonDataBody[A](implicit reads:Reads[A]): (WSResponse) => Future[Option[A]] = (r:WSResponse) => ( (r.json \ "data").validateOpt[A] match{
+    case err:JsError =>
+      Future.failed(ParseException(err))
+    case JsSuccess(value,_) =>
+      Future.successful(value)
+  })
 
   def jsonDataBody[A](implicit reads:Reads[A]) = (r:WSResponse) => ( (r.json \ "data").validate[A] match{
     case err:JsError =>

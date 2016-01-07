@@ -2,20 +2,29 @@ package codacy.metrics.play
 
 import codacy.healthChecks.DatabaseHealthCheck
 import codacy.metrics.dropwizard._
-import play.api.db.{DBApi, DBPlugin}
-import play.api.{Application, Plugin}
+import javax.inject._
+import play.api.{Configuration, Environment}
+import play.api.db.DBApi
+import play.api.inject.Module
 
-class MetricPlugin(app: Application) extends Plugin{ self =>
+trait DatabaseHealthChecks
 
-  override def onStart():Unit = {
-    app.plugin[DBPlugin].map(_.api).map(initDbHealthChecks)
-  }
+@Singleton
+class DatabaseHealthCheckImpl @Inject() (dbApi: DBApi) extends DatabaseHealthChecks{
+  initDbHealthChecks(dbApi)
 
   private[this] def initDbHealthChecks(dBApi: DBApi) = {
-    dBApi.datasources.foreach{ case (database,name) =>
+    dBApi.databases().foreach{ case database =>
       val healthCheck = DatabaseHealthCheck(database)
-      val checkName = HealthCheckName(s"$databasePrefix:${name}")
+      val checkName = HealthCheckName(s"$databasePrefix${database.name}")
       register(checkName,healthCheck)
     }
   }
+}
+
+class HealthCheckModule extends Module {
+  def bindings(environment: Environment,
+               configuration: Configuration) = Seq(
+    bind[DatabaseHealthChecks].to[DatabaseHealthCheckImpl].eagerly()
+  )
 }
