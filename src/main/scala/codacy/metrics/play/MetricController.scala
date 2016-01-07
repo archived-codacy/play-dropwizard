@@ -10,10 +10,10 @@ import play.api.mvc.{Action, Controller}
 import scala.concurrent.duration._
 import scala.concurrent.{ ExecutionContextExecutor, ExecutionContext, Future}
 
-private[play] object DropwizardExecutionContext{
+private[play] object DropwizardExecutionContext{ self =>
 
   object Implicits{
-    implicit val default: ExecutionContextExecutor = default
+    implicit val default: ExecutionContextExecutor = self.default
   }
 
   lazy val default: ExecutionContextExecutor =  ExecutionContext.fromExecutor( Executors.newCachedThreadPool() )

@@ -11,7 +11,7 @@ trait HealthCheckRegistry extends HealthCheckRegistryApi{
   private[dropwizard] def underlying:DropwizardHealthCheckRegistry
 }
 
-object HealthCheckRegistry extends HealthCheckRegistryApi{
+object HealthCheckRegistry extends HealthCheckRegistry{
   private[dropwizard] val underlying:DropwizardHealthCheckRegistry = new DropwizardHealthCheckRegistry
 }
 

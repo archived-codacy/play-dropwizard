@@ -1,6 +1,7 @@
 package codacy.metrics
 
 
+import _root_.play.api.Configuration
 import _root_.play.api.mvc.RequestHeader
 import codacy.filters.{RequestsTime, FailedRequests, SuccessfulRequests}
 import codacy.json.DropwizardJson
@@ -12,7 +13,7 @@ package object play extends DropwizardJson{
   private[play] val databasePrefix = "database:"
 
   def isDatabaseHealthCheck(healthCheckName: HealthCheckName) = {
-    healthCheckName.value.startsWith(databasePrefix)
+    healthCheckName.value.startsWith(databasePrefix) || healthCheckName.value.startsWith("HikariPool-")
   }
 
   private[play] def excludeRequest(request:RequestHeader) = Set(metricsPath,healthPath).contains(request.path)
@@ -22,4 +23,6 @@ package object play extends DropwizardJson{
     FailedRequests(failedRequests,excludeRequest),
     RequestsTime(excludeRequest)
   )
+
+  implicit class ConfigurationExtension(val underlying: Configuration) extends MetricConfiguration
 }
