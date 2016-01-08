@@ -1,7 +1,5 @@
 package codacy.metrics.cachet
 
-import scala.util.Failure
-
 object Cachet{ calls =>
 
   object components extends Crlud[ComponentCrud]{ cmp =>

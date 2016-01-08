@@ -1,12 +1,16 @@
 package codacy.metrics.cachet
 
-import play.api.Play
+import play.api.{Configuration, Play}
 
-object CachetConfiguration {
+trait CachetConfiguration {
 
-  private[this] def config = Play.current.configuration
+  def underlying: Configuration
 
-  lazy val cachetToken   = config.getString("codacy.metric.cachet.token")
-  lazy val cachetUrl     = config.getString("codacy.metric.cachet.url")
-  lazy val cachetEnabled = cachetToken.isDefined && cachetUrl.isDefined
+  def cachetToken   = underlying.getString("codacy.metric.cachet.token")
+  def cachetUrl     = underlying.getString("codacy.metric.cachet.url")
+  def cachetEnabled = cachetToken.isDefined && cachetUrl.isDefined
+}
+
+object CachetConfiguration extends CachetConfiguration {
+  override def underlying: Configuration = Play.current.configuration
 }

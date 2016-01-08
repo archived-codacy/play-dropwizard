@@ -10,6 +10,7 @@ libraryDependencies ++= Seq(
   metricsCore,
   metricsJson,
   metricsServlets,
+  metricsGraphite,
   play,
   playJdbc,
   playWs

@@ -1,7 +1,9 @@
 package codacy.metrics.cachet
 
-import play.api.Application
-import play.api.libs.ws.{WSRequest, WS, WSResponse}
+import com.typesafe.config.ConfigFactory
+import play.api.{Configuration, Application}
+import play.api.libs.ws.ning.{NingAsyncHttpClientConfigBuilder, NingWSClientConfig, NingWSClient}
+import play.api.libs.ws._
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json._
 

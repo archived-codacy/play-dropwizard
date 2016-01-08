@@ -1,26 +1,42 @@
 package codacy.metrics.play
 
+import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 
 import codacy.metrics.cachet._
 import codacy.metrics.dropwizard.{ Result => _, _}
+import com.codahale.metrics.graphite.{Graphite, GraphiteReporter}
 import play.api.Application
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 class MetricGlobal(cfg: Application => (CreateComponent, Option[CreateGroup]), filters: EssentialFilter*) extends WithFilters(filters ++ metricFilters:_*){ self =>
   import MetricConfiguration._
 
-  private[this] val metricsRouter = new MetricRouter(DefaultMetricController)
+  val metricsRouter = new MetricRouter(DefaultMetricController)
 
   override def onStart(app:Application): Unit = {
     super.onStart(app)
+    val (cmp,grp) = cfg(app)
     if (CachetConfiguration.cachetEnabled) {
       implicit val appl = app
       import play.api.libs.concurrent.Execution.Implicits._
-      (initCachet _).tupled(cfg(app))
-      CachetReporter().start(1,TimeUnit.MINUTES)
+
+      initCachet(cmp,grp).onSuccess{ case component =>
+        CachetReporter(component).start(1,TimeUnit.MINUTES)
+      }
+    }
+
+    graphiteHostname.map{ case hostname =>
+      val graphite = new Graphite(new InetSocketAddress(hostname, graphitePort))
+      val reporter = GraphiteReporter.forRegistry(MetricRegistry)
+        .prefixedWith(s"${graphitePrefix.map( p => s"$p.").getOrElse("")}${cmp.name}")
+        .convertRatesTo(TimeUnit.SECONDS)
+        .convertDurationsTo(TimeUnit.MILLISECONDS)
+        .build(graphite)
+      reporter.start(10, TimeUnit.SECONDS)
     }
   }
 
@@ -68,7 +84,14 @@ class MetricGlobal(cfg: Application => (CreateComponent, Option[CreateGroup]), f
             Cachet.components.update(UpdateComponent(cmp.id, status = Some(ComponentStatus.Operational)))
           }
         }.getOrElse{
-          Cachet.components.create(component.copy(groupId = groupId))
+          val res = Cachet.components.create(component.copy(groupId = groupId))
+          res.onComplete{
+            case Success(resp) =>
+              println(s"successfully registered component: ${resp.id}")
+            case Failure(err) =>
+              println(s"error registering component: ${err.getMessage}")
+          }
+          res
         }
       }
     }
