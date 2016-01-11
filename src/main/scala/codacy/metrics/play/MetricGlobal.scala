@@ -25,14 +25,15 @@ class MetricGlobal(cfg: Application => (CreateComponent, Option[CreateGroup]), f
       import play.api.libs.concurrent.Execution.Implicits._
 
       initCachet(cmp,grp).onSuccess{ case component =>
-        CachetReporter(component).start(1,TimeUnit.MINUTES)
+        if (CachetConfiguration.cachetMetrics)
+          CachetReporter(component).start(1,TimeUnit.MINUTES)
       }
     }
 
     graphiteHostname.map{ case hostname =>
       val graphite = new Graphite(new InetSocketAddress(hostname, graphitePort))
       val reporter = GraphiteReporter.forRegistry(MetricRegistry)
-        .prefixedWith(s"${graphitePrefix.map( p => s"$p.").getOrElse("")}${cmp.name}")
+        .prefixedWith(s"${graphitePrefix.map( p => s"$p.").getOrElse(cmp.name)}")
         .convertRatesTo(TimeUnit.SECONDS)
         .convertDurationsTo(TimeUnit.MILLISECONDS)
         .build(graphite)
@@ -85,12 +86,12 @@ class MetricGlobal(cfg: Application => (CreateComponent, Option[CreateGroup]), f
           }
         }.getOrElse{
           val res = Cachet.components.create(component.copy(groupId = groupId))
-          res.onComplete{
+          /*res.onComplete{
             case Success(resp) =>
-              println(s"successfully registered component: ${resp.id}")
+              //println(s"successfully registered component: ${resp.id}")
             case Failure(err) =>
-              println(s"error registering component: ${err.getMessage}")
-          }
+              //println(s"error registering component: ${err.getMessage}")
+          }*/
           res
         }
       }
