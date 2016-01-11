@@ -4,36 +4,44 @@ import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 
 import codacy.metrics.cachet._
-import codacy.metrics.dropwizard.{ Result => _, _}
+import codacy.metrics.dropwizard.{Result => _, _}
 import com.codahale.metrics.graphite.{Graphite, GraphiteReporter}
 import play.api.Application
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
-class MetricGlobal(cfg: Application => (CreateComponent, Option[CreateGroup]), filters: EssentialFilter*) extends WithFilters(filters ++ metricFilters:_*){ self =>
+case class CachetConfigKeys(createComponent:CreateComponent,createGroupOpt: Option[CreateGroup])
+case class GraphiteConfigKeys(prefix:String)
+
+class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[GraphiteConfigKeys]), filters: EssentialFilter*) extends WithFilters(filters ++ metricFilters:_*){ self =>
   import MetricConfiguration._
 
   val metricsRouter = new MetricRouter(DefaultMetricController)
 
   override def onStart(app:Application): Unit = {
     super.onStart(app)
-    val (cmp,grp) = cfg(app)
-    if (CachetConfiguration.cachetEnabled) {
+
+    val (cachetConfOpt, graphiteConfOpt) = cfg(app)
+
+    //Cachet init
+    cachetConfOpt.collect{ case conf if CachetConfiguration.cachetEnabled =>
       implicit val appl = app
       import play.api.libs.concurrent.Execution.Implicits._
-
-      initCachet(cmp,grp).onSuccess{ case component =>
+      initCachet(conf.createComponent,conf.createGroupOpt).onSuccess{ case component =>
         if (CachetConfiguration.cachetMetrics)
           CachetReporter(component).start(1,TimeUnit.MINUTES)
       }
     }
 
-    graphiteHostname.map{ case hostname =>
+    //Graphite init
+    for {
+      conf <- graphiteConfOpt
+      hostname <- graphiteHostname
+    } yield {
       val graphite = new Graphite(new InetSocketAddress(hostname, graphitePort))
       val reporter = GraphiteReporter.forRegistry(MetricRegistry)
-        .prefixedWith(s"${graphitePrefix.map( p => s"$p.").getOrElse(cmp.name)}")
+        .prefixedWith( graphitePrefix.getOrElse(conf.prefix) )
         .convertRatesTo(TimeUnit.SECONDS)
         .convertDurationsTo(TimeUnit.MILLISECONDS)
         .build(graphite)
