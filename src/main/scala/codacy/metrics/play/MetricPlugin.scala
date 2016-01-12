@@ -36,8 +36,7 @@ class DatabaseHealthCheckImpl @Inject() (dbApi: DBApi,configuration: Configurati
 }
 
 class DatabaseHealthCheckModule extends Module {
-  def bindings(environment: Environment,
-               configuration: Configuration) = Seq(
+  def bindings(environment: Environment, configuration: Configuration) = Seq(
     bind[DatabaseHealthChecks].to[DatabaseHealthCheckImpl].eagerly()
   )
 }
