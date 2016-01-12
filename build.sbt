@@ -26,12 +26,22 @@ lazy val commonSettings = Seq(
 lazy val core = (project in file(".")).
   dependsOn(macroSub).
   settings(commonSettings: _*).
-  aggregate(macroSub)
+  aggregate(macroSub).
+  settings(
+    // include the macro classes and resources in the main jar
+    mappings in (Compile, packageBin) <++= mappings in (macroSub, Compile, packageBin),
+    // include the macro sources in the main source jar
+    mappings in (Compile, packageSrc) <++= mappings in (macroSub, Compile, packageSrc)
+  )
 
 lazy val macroSub = (project in file("macro")).
   settings(commonSettings: _*).
   settings( libraryDependencies += scalaReflect.value ).
-  settings( libraryDependencies += playJson )
+  settings( libraryDependencies += playJson ).
+  settings(
+    publish := {},
+    publishLocal := {}
+  )
 
 organizationName := "Codacy"
 

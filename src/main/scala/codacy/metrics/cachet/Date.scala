@@ -7,7 +7,6 @@ import play.api.libs.json._
 
 import scala.util.{Failure, Success, Try}
 
-
 case class Date(value:DateTime) extends AnyVal
 
 object Date{
