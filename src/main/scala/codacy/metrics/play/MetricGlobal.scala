@@ -45,7 +45,7 @@ class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[Graphite
         .convertRatesTo(TimeUnit.SECONDS)
         .convertDurationsTo(TimeUnit.MILLISECONDS)
         .build(graphite)
-      reporter.start(10, TimeUnit.SECONDS)
+      reporter.start(1, TimeUnit.MINUTES)
     }
   }
 
