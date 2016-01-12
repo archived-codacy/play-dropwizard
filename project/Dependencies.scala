@@ -12,6 +12,7 @@ object Dependencies{
   val play            = "com.typesafe.play"     %% "play"             % playVersion
   val playJdbc        = "com.typesafe.play"     %% "play-jdbc"        % playVersion
   val playWs          = "com.typesafe.play"     %% "play-ws"          % playVersion
+  val playJson        = "com.typesafe.play"     %% "play-json"          % playVersion
   val macroParadise   = "org.scalamacros"       %% "paradise"         % "2.1.0"
 
 }

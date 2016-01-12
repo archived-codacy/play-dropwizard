@@ -66,10 +66,12 @@ object enrichedMacro{
         case _ =>
           q"""implicit val jsonAnnotationFormat = {
              import play.api.libs.json._
+             import codacy.util._
+
              val fmt = Json.format[$className]
              OFormat[$className](
                fmt,
-               OWrites[$className]( fmt.writes(_).as[JsObject] )
+               fmt.asOWrites
              )
           }"""
       }

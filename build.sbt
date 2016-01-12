@@ -30,7 +30,8 @@ lazy val core = (project in file(".")).
 
 lazy val macroSub = (project in file("macro")).
   settings(commonSettings: _*).
-  settings( libraryDependencies += scalaReflect.value )
+  settings( libraryDependencies += scalaReflect.value ).
+  settings( libraryDependencies += playJson )
 
 organizationName := "Codacy"
 

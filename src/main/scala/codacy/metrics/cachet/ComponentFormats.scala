@@ -4,6 +4,7 @@ import codacy.metrics.cachet.ComponentStatus._
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import codacy.util._
 
 private[cachet] trait ComponentFormats{
 
