@@ -1,26 +1,27 @@
-import Dependencies._
 
 name := """play-dropwizard"""
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
-lazy val scalaReflect = Def.setting { "org.scala-lang" % "scala-reflect" % scalaVersion.value }
+lazy val scalaReflect = Def.setting {
+  "org.scala-lang" % "scala-reflect" % scalaVersion.value
+}
 
 libraryDependencies ++= Seq(
-  metricsCore,
-  metricsJson,
-  metricsServlets,
-  metricsGraphite,
-  play,
-  playJdbc,
-  playWs
+  Dependencies.metricsCore,
+  Dependencies.metricsJson,
+  Dependencies.metricsServlets,
+  Dependencies.metricsGraphite,
+  Dependencies.play,
+  Dependencies.playJdbc,
+  Dependencies.playWs
 )
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   organization := "com.codacy",
-  version      := "0.1.0-SNAPSHOT",
-  addCompilerPlugin(macroParadise cross CrossVersion.full)
+  version := "0.1.0-SNAPSHOT",
+  addCompilerPlugin(Dependencies.macroParadise cross CrossVersion.full)
 )
 
 lazy val core = (project in file(".")).
@@ -29,19 +30,22 @@ lazy val core = (project in file(".")).
   aggregate(macroSub).
   settings(
     // include the macro classes and resources in the main jar
-    mappings in (Compile, packageBin) <++= mappings in (macroSub, Compile, packageBin),
+    mappings in(Compile, packageBin) <++= mappings in(macroSub, Compile, packageBin),
     // include the macro sources in the main source jar
-    mappings in (Compile, packageSrc) <++= mappings in (macroSub, Compile, packageSrc)
+    mappings in(Compile, packageSrc) <++= mappings in(macroSub, Compile, packageSrc)
   )
 
 lazy val macroSub = (project in file("macro")).
   settings(commonSettings: _*).
-  settings( libraryDependencies += scalaReflect.value ).
-  settings( libraryDependencies += playJson ).
+  settings(libraryDependencies += scalaReflect.value).
+  settings(libraryDependencies += Dependencies.playJson).
   settings(
     publish := {},
     publishLocal := {}
   )
+
+
+organization := "com.codacy"
 
 organizationName := "Codacy"
 
@@ -71,14 +75,14 @@ homepage := Some(url("https://github.com/codacy/play-dropwizard.git"))
 
 pomExtra :=
   <scm>
-    <url>https://github.com/codacy/play-dropwizard.git</url>
+    <url>https://github.com/codacy/play-dropwizard</url>
     <connection>scm:git:git@github.com:codacy/play-dropwizard.git</connection>
     <developerConnection>scm:git:https://github.com/codacy/play-dropwizard.git</developerConnection>
   </scm>
   <developers>
     <developer>
       <id>johannegger</id>
-      <name>Johann</name>
+      <name>Johann Egger</name>
       <email>johann [at] codacy.com</email>
       <url>https://github.com/johannegger</url>
     </developer>
