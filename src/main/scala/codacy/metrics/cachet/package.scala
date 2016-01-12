@@ -1,4 +1,6 @@
 package codacy.metrics
+
+import _root_.play.api.Configuration
 import _root_.play.api.libs.json._
 
 package object cachet extends Formats with WsApi with Crud with Cruds{
@@ -9,4 +11,6 @@ package object cachet extends Formats with WsApi with Crud with Cruds{
       case _ => throw new Exception("tried to convert a non object write to an object write")
     })
   }
+
+  implicit class ConfigurationExtension(val underlying:Configuration) extends AnyVal with CachetConfiguration
 }

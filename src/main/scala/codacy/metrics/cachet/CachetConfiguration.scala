@@ -2,7 +2,7 @@ package codacy.metrics.cachet
 
 import play.api.{Configuration, Play}
 
-trait CachetConfiguration {
+trait CachetConfiguration extends Any{
 
   def underlying: Configuration
 

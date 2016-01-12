@@ -52,25 +52,25 @@ private[cachet] trait WsApi{
 
   val is204 = statusCheck(_ == 204)
 
-  private[this] def applyRequest[P,R](request:Request[P,R],param:P)(implicit app:Application, ctx: ExecutionContext): Future[R] = {
+  private[this] def applyRequest[P,R](request:Request[P,R],param:P)(implicit ws: WSClient, ctx: ExecutionContext): Future[R] = {
     (for{
       baseUrl <- CachetConfiguration.cachetUrl
       token   <- CachetConfiguration.cachetToken
     } yield{
       val fullPath = s"$baseUrl${request.url(param)}"
-      request.f(param)(WS.url(fullPath).withHeaders("X-Cachet-Token" -> token)).flatMap(request.mapper)
+      request.f(param)(ws.url(fullPath).withHeaders("X-Cachet-Token" -> token)).flatMap(request.mapper)
     }).getOrElse(
       Future.failed(new Exception("cachet client not properly configured"))
     )
   }
 
   implicit class GeneralRequestApplier[Param,Result](request:Request[Param,Result])
-                                                    (implicit app:Application, ctx: ExecutionContext) extends (Param => Future[Result]) {
+                                                    (implicit ws: WSClient, ctx: ExecutionContext) extends (Param => Future[Result]) {
     def apply(param:Param): Future[Result] = applyRequest(request,param)
   }
 
   implicit class UnitRequestApplier[Result](request:Request[Unit,Result])
-                                           (implicit application:Application, executionContext: ExecutionContext) extends (() => Future[Result]) {
+                                           (implicit ws: WSClient, executionContext: ExecutionContext) extends (() => Future[Result]) {
     def apply(): Future[Result] = applyRequest(request,())
   }
 }

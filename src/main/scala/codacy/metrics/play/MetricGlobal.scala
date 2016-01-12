@@ -7,6 +7,7 @@ import codacy.metrics.cachet._
 import codacy.metrics.dropwizard.{Result => _, _}
 import com.codahale.metrics.graphite.{Graphite, GraphiteReporter}
 import play.api.Application
+import play.api.libs.ws.{WS, WSClient}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,8 +27,8 @@ class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[Graphite
 
     //Cachet init
     cachetConfOpt.collect{ case conf if CachetConfiguration.cachetEnabled =>
-      implicit val appl = app
       import play.api.libs.concurrent.Execution.Implicits._
+      implicit val wsClient = WS.client(app)
       CachetConnection.register(conf.createComponent,conf.createGroupOpt).onSuccess{ case component =>
         if (CachetConfiguration.cachetMetrics)
           CachetReporter(component).start(1,TimeUnit.MINUTES)
@@ -66,7 +67,7 @@ class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[Graphite
 }
 
 object CachetConnection{
-  def register(component: CreateComponent,group:Option[CreateGroup] )(implicit app:Application,executionContext: ExecutionContext): Future[ResponseComponent] = {
+  def register(component: CreateComponent,group:Option[CreateGroup] )(implicit ws: WSClient, executionContext: ExecutionContext): Future[ResponseComponent] = {
     //groupId:
     val groupId = group.map{ case group =>
       Cachet.components.groups.list().flatMap{ case groups =>
