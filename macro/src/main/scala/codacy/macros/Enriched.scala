@@ -4,13 +4,11 @@ import language.experimental.macros
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox._
 
-object enrichedMacro extends enrichedMacro
-
 class enriched extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro enrichedMacro.impl
 }
 
-class enrichedMacro{
+object enrichedMacro{
 
   def impl(c: Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
