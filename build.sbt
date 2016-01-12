@@ -52,7 +52,7 @@ publishTo := {
 
 startYear := Some(2016)
 
-description := "Bitbucket Scala Client"
+description := "dropwizard-metrics bindings for scala and play-framework"
 
 licenses := Seq("The Apache Software License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 
