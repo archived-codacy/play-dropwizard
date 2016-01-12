@@ -28,7 +28,7 @@ class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[Graphite
     cachetConfOpt.collect{ case conf if CachetConfiguration.cachetEnabled =>
       implicit val appl = app
       import play.api.libs.concurrent.Execution.Implicits._
-      initCachet(conf.createComponent,conf.createGroupOpt).onSuccess{ case component =>
+      CachetConnection.register(conf.createComponent,conf.createGroupOpt).onSuccess{ case component =>
         if (CachetConfiguration.cachetMetrics)
           CachetReporter(component).start(1,TimeUnit.MINUTES)
       }
@@ -63,9 +63,10 @@ class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[Graphite
     if(! excludeRequest(request)) mark(failedRequests)
     super[WithFilters].onBadRequest(request,error)
   }
+}
 
-
-  private[this] def initCachet(component: CreateComponent,group:Option[CreateGroup] )(implicit app:Application,executionContext: ExecutionContext): Future[ResponseComponent] = {
+object CachetConnection{
+  def register(component: CreateComponent,group:Option[CreateGroup] )(implicit app:Application,executionContext: ExecutionContext): Future[ResponseComponent] = {
     //groupId:
     val groupId = group.map{ case group =>
       Cachet.components.groups.list().flatMap{ case groups =>
