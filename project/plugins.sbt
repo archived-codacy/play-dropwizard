@@ -5,7 +5,7 @@ resolvers ++= Seq(
 
 addSbtPlugin("ohnosequences" % "sbt-s3-resolver" % "0.13.1")
 
-addSbtPlugin("com.codacy" % "codacy-sbt-plugin" % "4.0.16")
+addSbtPlugin("com.codacy" % "codacy-sbt-plugin" % "4.0.16" withSources())
 
 lazy val root: Project = project.in(file(".")).dependsOn(codacySbt)
 

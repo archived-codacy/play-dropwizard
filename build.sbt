@@ -17,15 +17,14 @@ libraryDependencies ++= Seq(
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
-  organization := "com.codacy",
-  version      := "0.1.0-SNAPSHOT",
+  organization := "codacy",
+  version      := "0.1.9-SNAPSHOT",
   addCompilerPlugin(Dependencies.macroParadise cross CrossVersion.full)
-)
+) ++ CodacySbt.autoImport.privateMvnPublish ++ CodacySbt.autoImport.privateMvnResolver
 
 lazy val core = (project in file(".")).
-  dependsOn(macroSub).
+  dependsOn(macroSub % "compile-internal").
   settings(commonSettings: _*).
-  aggregate(macroSub).
   settings(
     // include the macro classes and resources in the main jar
     mappings in (Compile, packageBin) <++= mappings in (macroSub, Compile, packageBin),
@@ -36,11 +35,9 @@ lazy val core = (project in file(".")).
 lazy val macroSub = (project in file("macro")).
   settings(commonSettings: _*).
   settings( libraryDependencies += scalaReflect.value ).
-  settings( libraryDependencies += playJson ).
+  settings( libraryDependencies += Dependencies.playJson ).
   settings(
     publish := {},
     publishLocal := {}
   )
-
-Common.appSettings
 

@@ -1,26 +1,15 @@
 package codacy.metrics.play
 
-import java.util.concurrent.Executors
-
 import codacy.metrics.dropwizard._
-import com.codahale.metrics.health.HealthCheck
-import play.api.libs.concurrent.Promise
 import play.api.libs.json.{Json, OWrites}
 import play.api.mvc.{Action, Controller}
-import scala.concurrent.duration._
-import scala.concurrent.{ ExecutionContextExecutor, ExecutionContext, Future}
-
-private[play] object DropwizardExecutionContext{ self =>
-
-  object Implicits{
-    implicit val default: ExecutionContextExecutor = self.default
-  }
-
-  lazy val default: ExecutionContextExecutor =  ExecutionContext.fromExecutor( Executors.newCachedThreadPool() )
-}
+import scala.concurrent.{ExecutionContext, Future}
 
 trait MetricController{ self: Controller =>
-  import DropwizardExecutionContext.Implicits._
+
+  implicit def executionContext:ExecutionContext
+
+  implicit def actorSystem: akka.actor.ActorSystem
 
   def isExcludedHealthCheck: HealthCheckName => Boolean
 

@@ -6,7 +6,7 @@ trait MetricRegistry extends MetricRegistryApi{
 }
 
 object MetricRegistry extends MetricRegistry{
-  private[dropwizard] val underlying:DropwizardMetricRegistry = new DropwizardMetricRegistry
+  private[dropwizard] lazy val underlying:DropwizardMetricRegistry = new DropwizardMetricRegistry
 }
 
 private[dropwizard] trait MetricRegistryApi{
