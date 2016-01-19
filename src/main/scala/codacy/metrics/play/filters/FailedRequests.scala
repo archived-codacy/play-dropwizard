@@ -1,4 +1,4 @@
-package codacy.filters
+package codacy.metrics.play.filters
 
 import codacy.metrics.dropwizard._
 import play.api.mvc.{Filter, RequestHeader, Result}

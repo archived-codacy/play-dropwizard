@@ -1,15 +1,13 @@
-import sbt._
-
 resolvers ++= Seq(
-  DefaultMavenRepository,
-  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
-  "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
-  Classpaths.typesafeReleases,
-  Classpaths.sbtPluginReleases
+  Resolver.url("sbt-plugin-snapshots", new URL("http://repo.scala-sbt.org/scalasbt/sbt-plugin-snapshots/"))(Resolver.ivyStylePatterns),
+  "Era7 maven releases" at "http://releases.era7.com.s3.amazonaws.com"
 )
 
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "1.1")
+addSbtPlugin("ohnosequences" % "sbt-s3-resolver" % "0.13.1")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-pgp" % "0.8.3")
+addSbtPlugin("com.codacy" % "codacy-sbt-plugin" % "4.0.16" withSources())
 
-addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.8")
+lazy val root: Project = project.in(file(".")).dependsOn(codacySbt)
+
+lazy val codacySbt = uri("ssh://git@bitbucket.org/qamine/codacy-sbt.git#4.0.16")
+

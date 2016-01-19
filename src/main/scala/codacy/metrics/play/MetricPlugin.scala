@@ -10,13 +10,13 @@ import play.api.inject.Module
 import com.codahale.metrics.health.{HealthCheckRegistry => DropwizardHealthCheckRegistry}
 import com.codahale.metrics.{MetricRegistry => DropwizardMetricRegistry}
 
-trait DatabaseHealthChecks
+//for compile-time DI
+trait DatabaseHealthChecks{
+  //dependencies:
+  def dbApi: DBApi
+  def configuration: Configuration
 
-@Singleton
-class DatabaseHealthCheckImpl @Inject() (dbApi: DBApi,configuration: Configuration) extends DatabaseHealthChecks{
-  initDbHealthChecks(dbApi)
-
-  private[this] def initDbHealthChecks(dBApi: DBApi) = {
+  def initDbHealthChecks(dBApi: DBApi): Unit = {
     dBApi.databases().foreach{ case database =>
       database.dataSource match{
         case ds:HikariDataSource =>
@@ -33,6 +33,11 @@ class DatabaseHealthCheckImpl @Inject() (dbApi: DBApi,configuration: Configurati
       }
     }
   }
+}
+
+@Singleton
+class DatabaseHealthCheckImpl @Inject() (val dbApi: DBApi, val configuration: Configuration) extends DatabaseHealthChecks{
+  initDbHealthChecks(dbApi)
 }
 
 class DatabaseHealthCheckModule extends Module {
