@@ -1,4 +1,3 @@
-
 name := """play-dropwizard"""
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
@@ -17,13 +16,8 @@ libraryDependencies ++= Seq(
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
-<<<<<<< Updated upstream
-  organization := "codacy",
-  version      := "0.1.12",
-=======
   organization := "com.codacy",
-  version      := "0.1.11",
->>>>>>> Stashed changes
+  version      := "0.1.12",
   addCompilerPlugin(Dependencies.macroParadise cross CrossVersion.full)
 )
 
