@@ -7,8 +7,7 @@ package object dropwizard
   extends TypesApi
   with MetricRegistryApi
   with HealthCheckRegistryApi
-  with Helpers
-  with TimerApi{
+  with Helpers{
 
   import scala.language.implicitConversions
   private[metrics] implicit def toUnderlying(metricRegistry: MetricRegistry ): metrics.MetricRegistry = metricRegistry.underlying

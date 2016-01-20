@@ -1,5 +1,9 @@
 package codacy.metrics.dropwizard
+
+import java.util.concurrent.TimeUnit
+
 import com.codahale.metrics.{MetricRegistry => DropwizardMetricRegistry, Histogram, Meter}
+import org.joda.time.{Duration, DateTime}
 
 import scala.util.Try
 
@@ -19,6 +23,11 @@ private[dropwizard] trait MetricRegistryApi{
 
   def update(histogramName: HistogramName, value:Long): Unit =
     histogram(histogramName).foreach(_.update(value))
+
+  def time(timerName: TimerName, start:DateTime,end:DateTime):Unit = {
+    val duration = new Duration(start,end)
+    timer(timerName).foreach(_.update(duration.getMillis, TimeUnit.MILLISECONDS))
+  }
 
   private[metrics] def meter(meterName: MeterName): Try[Meter] = Try(
     underlying.meter(meterName.value)
