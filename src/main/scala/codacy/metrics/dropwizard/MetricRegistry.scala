@@ -1,5 +1,5 @@
 package codacy.metrics.dropwizard
-import com.codahale.metrics.{MetricRegistry => DropwizardMetricRegistry, Meter}
+import com.codahale.metrics.{MetricRegistry => DropwizardMetricRegistry, Histogram, Meter}
 
 trait MetricRegistry extends MetricRegistryApi{
   private[dropwizard] def underlying:DropwizardMetricRegistry
@@ -20,4 +20,8 @@ private[dropwizard] trait MetricRegistryApi{
 
   def mark(meterName: MeterName, n:Long=1): Unit =
     meter(meterName).mark(n)
+
+  def histogram(histogramName: HistogramName): Histogram =
+    underlying.histogram(histogramName.value)
+
 }

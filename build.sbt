@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   organization := "codacy",
-  version      := "0.1.9-SNAPSHOT",
+  version      := "0.1.11",
   addCompilerPlugin(Dependencies.macroParadise cross CrossVersion.full)
 ) ++ CodacySbt.autoImport.privateMvnPublish ++ CodacySbt.autoImport.privateMvnResolver
 
