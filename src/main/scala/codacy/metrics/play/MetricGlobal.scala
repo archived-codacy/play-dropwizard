@@ -18,7 +18,7 @@ case class GraphiteConfigKeys(prefix:String)
 class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[GraphiteConfigKeys]), filters: EssentialFilter*) extends WithFilters(filters ++ metricFilters:_*){ self =>
   import MetricConfiguration._
 
-  val metricsRouter = new MetricRouter(DefaultMetricController)
+  lazy val metricsRouter = new MetricRouter(DefaultMetricController)
 
   override def onStart(app:Application): Unit = {
     super.onStart(app)

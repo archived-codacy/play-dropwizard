@@ -1,4 +1,4 @@
-package codacy.json
+package codacy.metrics.json
 
 import java.util.concurrent.TimeUnit
 import com.codahale.metrics.{MetricRegistry => DropwizardRegistry, MetricFilter}

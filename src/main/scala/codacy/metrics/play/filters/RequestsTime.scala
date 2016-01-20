@@ -11,8 +11,7 @@ case class RequestsTime(excludeRequest: RequestHeader => Boolean) extends Filter
     lazy val result = nextFilter(requestHeader)
 
     if(! excludeRequest(requestHeader)){
-      val context = timer(nameForRequest(requestHeader)).time()
-      result.onComplete( _ => context.stop() )
+      timedAsync(nameForRequest(requestHeader))(result)
     }
 
     result
