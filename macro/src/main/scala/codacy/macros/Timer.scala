@@ -4,7 +4,7 @@ import language.experimental.macros
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox._
 
-class timed extends StaticAnnotation {
+class timed(name:String) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro timedMacro.impl
 }
 
@@ -14,11 +14,19 @@ object timedMacro {
     import c.universe._
 
     def modifiedDeclaration(defdef:DefDef) = {
-      val name = c.internal.enclosingOwner.fullName
+
+      val customName = c.prefix.tree match {
+        case q"new timed($b)" =>
+          Option( c.eval[String](c.Expr(b)) )
+        case _ =>
+          Option.empty
+      }
+
+      val path = c.internal.enclosingOwner.fullName
 
       val mod = defdef match{
         case q"$mods def $tname[..$tparams](...$paramss): $tpt = $expr" =>
-          val fullName = s"$name.$tname"
+          val fullName = s"$path.${customName.getOrElse(tname.toString())}"
           val newExpr = q"""{
             import codacy.metrics.dropwizard.{timed,TimerName}
             timed(TimerName($fullName)){ $expr }
@@ -37,7 +45,7 @@ object timedMacro {
   }
 }
 
-class timedAsync(param:String = "") extends StaticAnnotation {
+class timedAsync(name:String) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro timedAsync.impl
 }
 
@@ -47,11 +55,19 @@ object timedAsync{
     import c.universe._
 
     def modifiedDeclaration(defdef:DefDef) = {
-      val name = c.internal.enclosingOwner.fullName
+
+      val customName = c.prefix.tree match {
+        case q"new timedAsync($b)" =>
+          Option( c.eval[String](c.Expr(b)) )
+        case _ =>
+          Option.empty
+      }
+
+      val path = c.internal.enclosingOwner.fullName
 
       val mod = defdef match{
         case q"$mods def $tname[..$tparams](...$paramss): $tpt = $expr" =>
-          val fullName = s"$name.$tname"
+          val fullName = s"$path.${customName.getOrElse(tname.toString())}"
           val newExpr = q"""{
             import codacy.metrics.dropwizard.{timedAsync,TimerName}
             timedAsync(TimerName($fullName)){ $expr }
