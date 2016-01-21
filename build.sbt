@@ -11,7 +11,8 @@ libraryDependencies ++= Seq(
   Dependencies.metricsGraphite,
   Dependencies.play,
   Dependencies.playJdbc,
-  Dependencies.playWs
+  Dependencies.playWs,
+  Dependencies.specs2
 )
 
 lazy val commonSettings = Seq(
@@ -23,6 +24,7 @@ lazy val commonSettings = Seq(
 
 lazy val core = (project in file(".")).
   dependsOn(macroSub % "compile-internal").
+  dependsOn(macroSub % "test").
   settings(commonSettings: _*).
   settings(
     // include the macro classes and resources in the main jar
