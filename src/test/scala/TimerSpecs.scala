@@ -4,7 +4,7 @@ import org.joda.time.{Duration, DateTime}
 import org.specs2.mutable.Specification
 import scala.collection.JavaConversions._
 
-class ThirdPartySpecs extends Specification{
+class TimerSpecs extends Specification{
 
   def allTimers = MetricRegistry.underlying.getTimers
 
