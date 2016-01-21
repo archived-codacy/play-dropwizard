@@ -19,7 +19,6 @@ class MacroSpecs extends Specification{
   @timed("customDef") def myOtherTimedMethod = 1
   @timedAsync("customAsyncDef") def myOtherAsyncTimedMethod = Future.successful(1)
 
-
   "A timer" should{
     "be created" in{
       val myResult = myTimedMethod

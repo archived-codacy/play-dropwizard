@@ -4,7 +4,7 @@ import language.experimental.macros
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros.whitebox._
 
-class timed(name:String) extends StaticAnnotation {
+class timed(name:String="") extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro timedMacro.impl
 }
 
@@ -17,7 +17,11 @@ object timedMacro {
 
       val customName = c.prefix.tree match {
         case q"new timed($b)" =>
-          Option( c.eval[String](c.Expr(b)) )
+          c.eval[String](c.Expr(b)) match{
+            case name if name.isEmpty =>
+              c.abort(c.enclosingPosition, "Invalid parameter, name cannot be empty, declare without parameter instead")
+            case nonEmpty => Option( nonEmpty )
+          }
         case _ =>
           Option.empty
       }
@@ -45,7 +49,7 @@ object timedMacro {
   }
 }
 
-class timedAsync(name:String) extends StaticAnnotation {
+class timedAsync(name:String="") extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro timedAsync.impl
 }
 
@@ -58,7 +62,12 @@ object timedAsync{
 
       val customName = c.prefix.tree match {
         case q"new timedAsync($b)" =>
-          Option( c.eval[String](c.Expr(b)) )
+          c.eval[String](c.Expr(b)) match{
+            case name if name.isEmpty =>
+              c.abort(c.enclosingPosition, "Invalid parameter, name cannot be empty declare without parameter instead")
+            case nonEmpty => Option( nonEmpty )
+          }
+
         case _ =>
           Option.empty
       }
