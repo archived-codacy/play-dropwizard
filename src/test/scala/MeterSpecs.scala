@@ -18,7 +18,7 @@ class MeterSpecs extends Specification{
         meter.getCount
       }
 
-      count must beSome.which(_ > 1)
+      count must beSome.which(_ > 0)
     }
 
     "have a prefixed name" in{
