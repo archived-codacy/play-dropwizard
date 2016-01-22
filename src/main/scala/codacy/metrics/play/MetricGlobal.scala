@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit
 
 import codacy.metrics.cachet._
 import codacy.metrics.dropwizard.{Result => _, _}
-import com.codahale.metrics.graphite.{Graphite, GraphiteReporter}
-import play.api.Application
+
+import play.api.{Configuration, Application}
 import play.api.libs.ws.{WS, WSClient}
 import play.api.mvc._
 
@@ -36,24 +36,8 @@ class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[Graphite
     }
 
     //Graphite init
-    for {
-      conf <- graphiteConfOpt
-      hostname <- graphiteHostname
-    } yield {
-
-      val playConfPrefix = graphitePrefix.map(p => s"$p.").getOrElse("")
-      //then concat the one passed
-      val componentName = conf.componentName
-      val instanceName  = conf.instanceName
-      val prefix = s"$playConfPrefix$componentName.$instanceName"
-
-      val graphite = new Graphite(new InetSocketAddress(hostname, graphitePort))
-      val reporter = GraphiteReporter.forRegistry(MetricRegistry)
-        .prefixedWith( prefix )
-        .convertRatesTo(TimeUnit.SECONDS)
-        .convertDurationsTo(TimeUnit.MILLISECONDS)
-        .build(graphite)
-      reporter.start(1, TimeUnit.MINUTES)
+    graphiteConfOpt.foreach{ case conf =>
+      new GraphiteReporter(conf,app.configuration).init()
     }
   }
 
@@ -70,6 +54,27 @@ class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[Graphite
   override def onBadRequest(request: RequestHeader, error: String): Future[Result] = {
     if(! excludeRequest(request)) mark(failedRequests)
     super[WithFilters].onBadRequest(request,error)
+  }
+}
+
+class GraphiteReporter(conf:GraphiteConfigKeys, sysConfig:Configuration){
+  import com.codahale.metrics.graphite.{Graphite, GraphiteReporter}
+  def init() = {
+    sysConfig.graphiteHostname.foreach{ case graphiteHostname =>
+      val playConfPrefix = sysConfig.graphitePrefix.map(p => s"$p.").getOrElse("")
+      //then concat the one passed
+      val componentName = conf.componentName
+      val instanceName  = conf.instanceName
+      val prefix = s"$playConfPrefix$componentName.$instanceName"
+
+      val graphite = new Graphite(new InetSocketAddress(graphiteHostname, sysConfig.graphitePort))
+      val reporter = GraphiteReporter.forRegistry(MetricRegistry)
+        .prefixedWith( prefix )
+        .convertRatesTo(TimeUnit.SECONDS)
+        .convertDurationsTo(TimeUnit.MILLISECONDS)
+        .build(graphite)
+      reporter.start(1, TimeUnit.MINUTES)
+    }
   }
 }
 
