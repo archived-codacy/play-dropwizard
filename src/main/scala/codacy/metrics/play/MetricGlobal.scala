@@ -13,7 +13,7 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 case class CachetConfigKeys(createComponent:CreateComponent,createGroupOpt: Option[CreateGroup])
-case class GraphiteConfigKeys(prefix:String)
+case class GraphiteConfigKeys(componentName:String,instanceName:String)
 
 class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[GraphiteConfigKeys]), filters: EssentialFilter*) extends WithFilters(filters ++ metricFilters:_*){ self =>
   import MetricConfiguration._
@@ -40,9 +40,16 @@ class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[Graphite
       conf <- graphiteConfOpt
       hostname <- graphiteHostname
     } yield {
+
+      val playConfPrefix = graphitePrefix.map(p => s"$p.").getOrElse("")
+      //then concat the one passed
+      val componentName = conf.componentName
+      val instanceName  = conf.instanceName
+      val prefix = s"$playConfPrefix$componentName.$instanceName"
+
       val graphite = new Graphite(new InetSocketAddress(hostname, graphitePort))
       val reporter = GraphiteReporter.forRegistry(MetricRegistry)
-        .prefixedWith( graphitePrefix.getOrElse(conf.prefix) )
+        .prefixedWith( prefix )
         .convertRatesTo(TimeUnit.SECONDS)
         .convertDurationsTo(TimeUnit.MILLISECONDS)
         .build(graphite)
