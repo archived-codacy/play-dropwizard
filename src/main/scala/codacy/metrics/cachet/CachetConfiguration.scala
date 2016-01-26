@@ -2,14 +2,16 @@ package codacy.metrics.cachet
 
 import play.api.{Configuration, Play}
 
-trait CachetConfiguration extends Any{
+trait CachetConfiguration{
 
   def underlying: Configuration
 
-  def cachetToken   = underlying.getString("codacy.metric.cachet.token")
-  def cachetUrl     = underlying.getString("codacy.metric.cachet.url")
-  def cachetMetrics = underlying.getBoolean("codacy.metric.cachet.metricsEnabled").getOrElse(false)
-  def cachetEnabled = cachetToken.isDefined && cachetUrl.isDefined
+  object cachet{
+    lazy val token   = underlying.getString("codacy.metric.cachet.token").filter(_.nonEmpty)
+    lazy val url     = underlying.getString("codacy.metric.cachet.url").filter(_.nonEmpty)
+    lazy val metrics = underlying.getBoolean("codacy.metric.cachet.metricsEnabled").getOrElse(false)
+    lazy val enabled = underlying.getBoolean("codacy.metric.cachet.isEnabled").getOrElse(false)
+  }
 }
 
 object CachetConfiguration extends CachetConfiguration {

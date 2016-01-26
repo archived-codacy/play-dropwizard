@@ -54,8 +54,8 @@ private[cachet] trait WsApi{
 
   private[this] def applyRequest[P,R](request:Request[P,R],param:P)(implicit ws: WSClient, ctx: ExecutionContext): Future[R] = {
     (for{
-      baseUrl <- CachetConfiguration.cachetUrl
-      token   <- CachetConfiguration.cachetToken
+      baseUrl <- CachetConfiguration.cachet.url
+      token   <- CachetConfiguration.cachet.token
     } yield{
       val fullPath = s"$baseUrl${request.url(param)}"
       request.f(param)(ws.url(fullPath).withHeaders("X-Cachet-Token" -> token)).flatMap(request.mapper)
