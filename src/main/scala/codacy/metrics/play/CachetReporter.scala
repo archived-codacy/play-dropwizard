@@ -2,20 +2,22 @@ package codacy.metrics.play
 
 import java.util
 import java.util.concurrent.TimeUnit
+
 import codacy.metrics.cachet._
 import codacy.metrics.dropwizard._
-import com.codahale.metrics.{Meter, Counter, MetricFilter, Gauge, Histogram, ScheduledReporter}
+import com.codahale.metrics.{Counter, Gauge, Histogram, Meter, MetricFilter, ScheduledReporter}
 import org.joda.time.DateTime
-import play.api.Application
+import play.api.Configuration
 import play.api.libs.ws.WSClient
+
 import scala.collection.JavaConversions._
-import scala.concurrent.{ExecutionContext, Await, Future}
 import scala.concurrent.duration._
-import scala.util.{Success, Failure, Try}
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.util.Try
 
 private[play] case class CachetReporter(component:ResponseComponent, registry: MetricRegistry=MetricRegistry, name: String="CachetReporter",
                                         filter: MetricFilter=MetricFilter.ALL, rateUnit: TimeUnit=TimeUnit.SECONDS,
-                                        durationUnit: TimeUnit=TimeUnit.SECONDS)(implicit ws:WSClient, executionContext: ExecutionContext)
+                                        durationUnit: TimeUnit=TimeUnit.SECONDS)(implicit ws:WSClient, executionContext: ExecutionContext, configuration: Configuration)
   extends ScheduledReporter(registry,name,filter,rateUnit,durationUnit){
 
 

@@ -1,11 +1,10 @@
 package codacy.metrics.cachet
 
-import com.typesafe.config.ConfigFactory
-import play.api.{Configuration, Application}
-import play.api.libs.ws.ning.{NingAsyncHttpClientConfigBuilder, NingWSClientConfig, NingWSClient}
-import play.api.libs.ws._
-import scala.concurrent.{ExecutionContext, Future}
+import play.api.Configuration
 import play.api.libs.json._
+import play.api.libs.ws._
+
+import scala.concurrent.{ExecutionContext, Future}
 
 sealed trait Request[Param,Result]{ self =>
 
@@ -52,10 +51,10 @@ private[cachet] trait WsApi{
 
   val is204 = statusCheck(_ == 204)
 
-  private[this] def applyRequest[P,R](request:Request[P,R],param:P)(implicit ws: WSClient, ctx: ExecutionContext): Future[R] = {
+  private[this] def applyRequest[P,R](request:Request[P,R],param:P)(implicit ws: WSClient, ctx: ExecutionContext, configuration: Configuration): Future[R] = {
     (for{
-      baseUrl <- CachetConfiguration.cachet.url
-      token   <- CachetConfiguration.cachet.token
+      baseUrl <- configuration.cachet.url
+      token   <- configuration.cachet.token
     } yield{
       val fullPath = s"$baseUrl${request.url(param)}"
       request.f(param)(ws.url(fullPath).withHeaders("X-Cachet-Token" -> token)).flatMap(request.mapper)
@@ -65,12 +64,12 @@ private[cachet] trait WsApi{
   }
 
   implicit class GeneralRequestApplier[Param,Result](request:Request[Param,Result])
-                                                    (implicit ws: WSClient, ctx: ExecutionContext) extends (Param => Future[Result]) {
+                                                    (implicit ws: WSClient, ctx: ExecutionContext, configuration: Configuration) extends (Param => Future[Result]) {
     def apply(param:Param): Future[Result] = applyRequest(request,param)
   }
 
   implicit class UnitRequestApplier[Result](request:Request[Unit,Result])
-                                           (implicit ws: WSClient, executionContext: ExecutionContext) extends (() => Future[Result]) {
+                                           (implicit ws: WSClient, executionContext: ExecutionContext, configuration: Configuration) extends (() => Future[Result]) {
     def apply(): Future[Result] = applyRequest(request,())
   }
 }
