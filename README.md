@@ -3,10 +3,10 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.codacy/play-dropwizard_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.codacy/play-dropwizard_2.11)
 
 # play-dropwizard
-[dropwizard-metrics](http://dropwizard.github.io/metrics/3.1.0/) works for [scala](http://www.scala-lang.org/) 2.11 and [play](https://www.playframework.com/) 2.4 
+dropwizard-metrics scala bindings and play components
 
 ### Prerequisites
-the library currently works for scala 2.11 and 
+[dropwizard-metrics](http://dropwizard.github.io/metrics/3.1.0/) works for [scala](http://www.scala-lang.org/) 2.11 and [play](https://www.playframework.com/) 2.4 
 
 ### Setup
 add the following as a dependency to your sbt configuration:
