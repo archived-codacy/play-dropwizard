@@ -19,8 +19,7 @@ case class RequestStatus(excludeRequest: RequestHeader => Boolean) extends Filte
   }
 
   private[this] def nameForRequestAndStatus(requestHeader: RequestHeader,status:Int):MeterName = {
-    val dottedPath = s"path${requestHeader.path.replaceAll("""/""",""".""")}"
 
-    MeterName(s"$dottedPath.status.$status")
+    MeterName(s"${dottedPath(requestHeader)}.status.$status")
   }
 }

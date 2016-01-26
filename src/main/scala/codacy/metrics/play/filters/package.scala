@@ -1,7 +1,7 @@
 package codacy.metrics.play
 
 import play.api.http.Status._
-import play.api.mvc.Result
+import play.api.mvc.{RequestHeader, Result}
 
 package object filters {
 
@@ -11,4 +11,8 @@ package object filters {
   }
 
   private[filters] implicit val executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+  private[filters] def dottedPath(requestHeader:RequestHeader) = {
+    s"path${requestHeader.path.replaceAll("""/""",""".""")}"
+  }
 }

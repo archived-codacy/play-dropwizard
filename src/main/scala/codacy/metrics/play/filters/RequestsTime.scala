@@ -18,6 +18,6 @@ case class RequestsTime(excludeRequest: RequestHeader => Boolean) extends Filter
   }
 
   private[this] def nameForRequest(requestHeader: RequestHeader):TimerName = {
-    TimerName(s"path${requestHeader.path.replaceAll("""/""",""".""")}")
+    TimerName(dottedPath(requestHeader))
   }
 }

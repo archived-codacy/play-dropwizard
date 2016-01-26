@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 case class CachetConfigKeys(createComponent:CreateComponent,createGroupOpt: Option[CreateGroup])
 case class GraphiteConfigKeys(componentName:String,instanceName:String)
 
-class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[GraphiteConfigKeys]), filters: EssentialFilter*) extends WithFilters(filters ++ metricFilters:_*){ self =>
+class MetricGlobal(cfg: Application => (Option[CachetConfigKeys],Option[GraphiteConfigKeys]), filters: EssentialFilter*) extends WithFilters(filters:_*){ self =>
   import MetricConfiguration._
 
   lazy val metricsRouter = new MetricRouter(DefaultMetricController)

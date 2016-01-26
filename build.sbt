@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   organization := "com.codacy",
-  version      := "0.1.12",
+  version      := "0.1.28-SNAPSHOT",
   addCompilerPlugin(Dependencies.macroParadise cross CrossVersion.full)
 )
 
