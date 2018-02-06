@@ -1,9 +1,15 @@
+# play-dropwizard
+dropwizard-metrics scala bindings and play components
+
+**Unmaintained**
+> Codacy is not using this dropwizard plugin at the moment and for that reason we are not developing this library any more. Feel free to fork this and keep your own code.
+
+## Alternatives
+* https://github.com/kdrakon/play-dropwizard-metrics-dash
+
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/beef0c99aa7b4579a8b3389916358232)](https://www.codacy.com/app/Codacy/play-dropwizard)
 [![Circle CI](https://circleci.com/gh/codacy/play-dropwizard.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/codacy/play-dropwizard)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.codacy/play-dropwizard_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.codacy/play-dropwizard_2.11)
-
-# play-dropwizard
-dropwizard-metrics scala bindings and play components
 
 ### Prerequisites
 [dropwizard-metrics](http://dropwizard.github.io/metrics/3.1.0/) works for [scala](http://www.scala-lang.org/) 2.11 and [play](https://www.playframework.com/) 2.4 
